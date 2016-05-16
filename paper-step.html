@@ -1,0 +1,118 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../marked-element/marked-element.html">
+<script src="../showdown/dist/showdown.min.js"></script>
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <paper-step step-number="7">Hey There<paper-step/>
+
+    renders to -> 7.
+@demo
+-->
+<dom-module id="paper-step">
+    <template>
+        <style is="custom-style" include="iron-flex"></style>
+        <style is="custom-style" include="iron-flex-alignment"></style>
+        <style>
+            :host {
+                margin: 15px;
+            }
+
+            paper-material {
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 10px 16px;
+            }
+
+            paper-material content {
+                display: inline;
+            }
+
+            #stepStyle {
+                width: 15px;
+                border-right: solid 1px rgba(100, 100, 100, 0.3);
+                margin-right: 10px;
+                padding-right: 5px;
+                /*vertical-align: middle;*/
+            }
+
+            #stepStyle p {
+                /*vertical-align: middle;*/
+            }
+
+            #content {
+            }
+        </style>
+
+        <paper-material elevation="[[elevation]]" class="layout horizontal center">
+
+            <template is="dom-if" if="{{isStep(step)}}">
+                <div id="stepStyle" class="self-stretch layout vertical around-justified">
+                    [[step]].
+                </div>
+            </template>
+
+            <div id="content" class="flex" style="visibility: hidden;">
+                <content id="myContent" ></content>
+
+            </div>
+            <div id="testOne">
+            </div>
+        </paper-material>
+    </template>
+    <script>
+        Polymer({
+            is: 'paper-step',
+            properties: {
+                step: {
+                    type: Number,
+                    value: 0
+                },
+                elevation: {
+                    type: Number,
+                    value: 1
+                }
+            },
+            ready: function () {
+            },
+            isStep: function (value) {
+                return value != 0;
+            },
+            attached: function () {
+                console.log( this.getContentChildren('#myContent')[0].innerText);
+
+                var text = this.getContentChildren('#myContent')[0].innerText,
+                        target = document.getElementById('testOne'),
+                        converter = new showdown.Converter(),
+                        html = converter.makeHtml(text);
+
+                target.innerHTML = html;
+
+                console.log(html);
+            },
+
+            getMarkdown: function ()
+            {
+//                console.log(this.$.myContent.getDistributedNodes()[0].data);
+//                console.log(this.$.myContent.textContent);
+//                return this.$.myContent.textContent;
+                console.log(this.$.myContent.innerText);
+                return "";
+            }
+        });
+    </script>
+</dom-module>
