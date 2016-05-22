@@ -23,15 +23,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- You can use the document as a place to set up your fixtures. -->
     <h3>Here below is the step unit</h3>
-    <paper-step step-number="11">Hey There</paper-step>
+    <paper-step step="112" elevation="1" id="withStep">
+<div>
+#Hey There
+</div>
+    </paper-step>
 
+    <paper-step elevation="1" id="stepless">
+<div>
+#Test
+</div>
+    </paper-step>
     <script>
-      var myEl = document.querySelector('paper-step > paper-material');
+      var testHeader = document.querySelector('#heythere');
+      var stepnumber = document.querySelector('#withStep #stepStyle');
 
       suite('<paper-step>', function() {
+        test('Verify step number 112 printed', function() {
+          assert.equal(stepnumber.textContent.trim(), '112.');
+        });
 
-        test('test if displays 3. inside strong', function() {
-          assert.equal(myEl.text, '11. Hey There');
+        test('Verify header printed', function() {
+          assert.equal(testHeader.textContent, 'Hey There');
         });
       });
     </script>

@@ -10,7 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../marked-element/marked-element.html">
 <script src="../showdown/dist/showdown.min.js"></script>
 
 <!--
@@ -18,9 +17,17 @@ An element providing a solution to no problem in particular.
 
 Example:
 
-    <paper-step step-number="7">Hey There<paper-step/>
+```html
+<paper-step step="1" elevation="2">
+<div>
+# Unordered List:
 
-    renders to -> 7.
+</div>
+</paper-step>
+```
+
+    results in:
+# Unordered List:
 @demo
 -->
 <dom-module id="paper-step">
@@ -43,34 +50,34 @@ Example:
             }
 
             #stepStyle {
-                width: 15px;
                 border-right: solid 1px rgba(100, 100, 100, 0.3);
-                margin-right: 10px;
+                margin-right: 20px;
                 padding-right: 5px;
+                margin-left: -5px;
                 /*vertical-align: middle;*/
             }
 
-            #stepStyle p {
-                /*vertical-align: middle;*/
-            }
-
-            #content {
+            .hidden {
+                visibility: hidden;
+                position: relative;
+                height: 0px;
+                width: 0px;
             }
         </style>
 
         <paper-material elevation="[[elevation]]" class="layout horizontal center">
 
+            <div class="hidden">
+                <content id="myContent"></content>
+            </div>
             <template is="dom-if" if="{{isStep(step)}}">
                 <div id="stepStyle" class="self-stretch layout vertical around-justified">
                     [[step]].
                 </div>
             </template>
 
-            <div id="content" class="flex" style="visibility: hidden;">
-                <content id="myContent" ></content>
-
-            </div>
-            <div id="testOne">
+            <div id="content" class="flex">
+                <div id="target"></div>
             </div>
         </paper-material>
     </template>
@@ -85,34 +92,24 @@ Example:
                 elevation: {
                     type: Number,
                     value: 1
-                }
+                },
             },
             ready: function () {
+                var distributed = this.getContentChildren('#myContent');
+                console.log(distributed);
+                var markdown = distributed[0].textContent;
+                var text = markdown,
+                        target = this.$.target,
+                        converter = new showdown.Converter(),
+                        html = converter.makeHtml(text);
+
+                console.log(html);
+
+                target.innerHTML = html;
             },
             isStep: function (value) {
                 return value != 0;
             },
-            attached: function () {
-                console.log( this.getContentChildren('#myContent')[0].innerText);
-
-                var text = this.getContentChildren('#myContent')[0].innerText,
-                        target = document.getElementById('testOne'),
-                        converter = new showdown.Converter(),
-                        html = converter.makeHtml(text);
-
-                target.innerHTML = html;
-
-                console.log(html);
-            },
-
-            getMarkdown: function ()
-            {
-//                console.log(this.$.myContent.getDistributedNodes()[0].data);
-//                console.log(this.$.myContent.textContent);
-//                return this.$.myContent.textContent;
-                console.log(this.$.myContent.innerText);
-                return "";
-            }
         });
     </script>
 </dom-module>
