@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../iron-image/iron-image.html">
+<script src="../to-markdown/dist/to-markdown.js"></script>
 <script src="../showdown/dist/showdown.min.js"></script>
 
 <!--
@@ -22,6 +24,8 @@ Example:
 <div>
 # Unordered List:
 
+1. First Item
+2. Second Item
 </div>
 </paper-step>
 ```
@@ -36,7 +40,7 @@ Example:
         <style is="custom-style" include="iron-flex-alignment"></style>
         <style>
             :host {
-                margin: 15px;
+                margin: 15px 25px;
             }
 
             paper-material {
@@ -45,28 +49,27 @@ Example:
                 padding: 10px 16px;
             }
 
-            paper-material content {
-                display: inline;
-            }
-
             #stepStyle {
                 border-right: solid 1px rgba(100, 100, 100, 0.3);
                 margin-right: 20px;
                 padding-right: 5px;
                 margin-left: -5px;
-                /*vertical-align: middle;*/
             }
 
             .hidden {
                 visibility: hidden;
                 position: relative;
-                height: 0px;
-                width: 0px;
+                height: 0;
+                width: 0;
             }
+
+            #textField{
+                margin: -10px -16px;
+            }
+
         </style>
 
-        <paper-material elevation="[[elevation]]" class="layout horizontal center">
-
+        <paper-material id="visionToggler" elevation="[[elevation]]" class="layout horizontal center">
             <div class="hidden">
                 <content id="myContent"></content>
             </div>
@@ -76,9 +79,15 @@ Example:
                 </div>
             </template>
 
-            <div id="content" class="flex">
+            <div id="content" on-dblclick="exchange" class="flex">
                 <div id="target"></div>
             </div>
+        </paper-material>
+
+        <paper-material id="textPaper" elevation="[[elevation]]" class="horizontal start-justified layout hidden">
+            <textarea id="textField" on-focusout="onTextFieldBlur" class="flex self-stretch">
+
+            </textarea>
         </paper-material>
     </template>
     <script>
@@ -96,20 +105,36 @@ Example:
             },
             ready: function () {
                 var distributed = this.getContentChildren('#myContent');
-                console.log(distributed);
                 var markdown = distributed[0].textContent;
                 var text = markdown,
                         target = this.$.target,
                         converter = new showdown.Converter(),
                         html = converter.makeHtml(text);
 
-                console.log(html);
-
                 target.innerHTML = html;
             },
             isStep: function (value) {
                 return value != 0;
             },
+            exchange: function () {
+                var elemHeight = this.$.visionToggler.offsetHeight;
+                this.toggleClass('hidden', true, this.$.visionToggler);
+                this.$.textField.value = toMarkdown(this.$.target.innerHTML);
+                this.toggleClass('hidden', false, this.$.textPaper);
+                this.$.textField.style.height = elemHeight + 'px';
+                this.$.textField.focus();
+            },
+            onTextFieldBlur: function() {
+                var markdown =  this.$.textField.value;
+                var text = markdown,
+                        target = this.$.target,
+                        converter = new showdown.Converter(),
+                        html = converter.makeHtml(text);
+
+                target.innerHTML = html;
+                this.toggleClass('hidden', true, this.$.textPaper);
+                this.toggleClass('hidden', false, this.$.visionToggler);
+            }
         });
     </script>
 </dom-module>
