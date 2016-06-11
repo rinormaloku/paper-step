@@ -10,28 +10,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-material/paper-material.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../iron-image/iron-image.html">
 <script src="../to-markdown/dist/to-markdown.js"></script>
 <script src="../showdown/dist/showdown.min.js"></script>
 
 <!--
-An element providing a solution to no problem in particular.
-
 Example:
 
 ```html
-<paper-step step="1" elevation="2">
-<div>
-# Unordered List:
-
-1. First Item
-2. Second Item
-</div>
+<paper-step step="1" elevation="2" description="**BOLD** Movement">
 </paper-step>
 ```
 
-    results in:
-# Unordered List:
+Results in:
 @demo
 -->
 <dom-module id="paper-step">
@@ -39,9 +29,9 @@ Example:
         <style is="custom-style" include="iron-flex"></style>
         <style is="custom-style" include="iron-flex-alignment"></style>
         <style>
-            :host {
-                margin: 15px 25px;
-            }
+            /*:host {*/
+            /**/
+            /*}*/
 
             paper-material {
                 max-width: 700px;
@@ -58,36 +48,40 @@ Example:
 
             .hidden {
                 visibility: hidden;
-                position: relative;
+                position: absolute;
                 height: 0;
                 width: 0;
+                margin: 0;
+                padding: 0;
             }
 
             #textField{
                 margin: -10px -16px;
             }
 
+            #textPaper{
+                margin: 15px 0px;
+            }
+            #visionToggler{
+                margin: 15px 0px;
+            }
+
         </style>
 
-        <paper-material id="visionToggler" elevation="[[elevation]]" class="layout horizontal center">
-            <div class="hidden">
-                <content id="myContent"></content>
-            </div>
+        <paper-material id="visionToggler" elevation="[[elevation]]" on-dblclick="exchange" class="layout horizontal center">
             <template is="dom-if" if="{{isStep(step)}}">
                 <div id="stepStyle" class="self-stretch layout vertical around-justified">
                     [[step]].
                 </div>
             </template>
 
-            <div id="content" on-dblclick="exchange" class="flex">
+            <div id="content"  class="flex">
                 <div id="target"></div>
             </div>
         </paper-material>
 
         <paper-material id="textPaper" elevation="[[elevation]]" class="horizontal start-justified layout hidden">
-            <textarea id="textField" on-focusout="onTextFieldBlur" class="flex self-stretch">
-
-            </textarea>
+            <textarea id="textField" on-focusout="onTextFieldBlur" class="flex self-stretch"></textarea>
         </paper-material>
     </template>
     <script>
@@ -102,11 +96,14 @@ Example:
                     type: Number,
                     value: 1
                 },
+                description: {
+                    type: String,
+                    value: '',
+                    notify: true
+                }
             },
             ready: function () {
-                var distributed = this.getContentChildren('#myContent');
-                var markdown = distributed[0].textContent;
-                var text = markdown,
+                var text = this.description,
                         target = this.$.target,
                         converter = new showdown.Converter(),
                         html = converter.makeHtml(text);
@@ -134,6 +131,7 @@ Example:
                 target.innerHTML = html;
                 this.toggleClass('hidden', true, this.$.textPaper);
                 this.toggleClass('hidden', false, this.$.visionToggler);
+                Polymer.dom().flush();
             }
         });
     </script>
